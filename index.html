@@ -6,6 +6,7 @@
     <title>CAT CPNS PRO - DIMAS MIFTAH</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; display: flex; flex-direction: column; min-h-screen; }
@@ -85,17 +86,37 @@
     </main>
 
     <div id="modal-hasil" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-indigo-950/80 backdrop-blur-sm fade-in">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl">
-            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🏆</span></div>
-            <h2 id="hasil-title" class="text-2xl font-black text-indigo-900 mb-1">Selesai!</h2>
-            <p id="hasil-status" class="text-[10px] font-black uppercase tracking-widest mb-4 text-slate-400">STATUS</p>
-            <p id="hasil-msg" class="text-slate-500 text-xs mb-8">Hasil simulasi kamu telah direkap.</p>
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Benar</p><p id="hasil-benar" class="text-xl font-black text-emerald-500">0</p></div>
-                <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Skor Akhir</p><p id="hasil-skor" class="text-xl font-black text-indigo-600">0</p></div>
+        <div class="bg-white w-full max-w-sm rounded-[3rem] overflow-hidden shadow-2xl">
+            
+            <div id="area-sertifikat" class="bg-white p-8 text-center relative">
+                <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none text-4xl font-black rotate-12">DIMAS MIFTAH CPNS PRO</div>
+                
+                <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10"><span class="text-4xl">🏆</span></div>
+                <h2 id="hasil-title" class="text-2xl font-black text-indigo-900 mb-1 relative z-10">Hasil Simulasi</h2>
+                <p id="hasil-status" class="text-[10px] font-black uppercase tracking-widest mb-4 text-slate-400 relative z-10">STATUS</p>
+                <p id="hasil-msg" class="text-slate-500 text-[10px] mb-8 px-4 relative z-10 leading-relaxed italic">Hasil simulasi kamu telah direkap.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                    <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Benar</p><p id="hasil-benar" class="text-xl font-black text-emerald-500">0</p></div>
+                    <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Skor Akhir</p><p id="hasil-skor" class="text-xl font-black text-indigo-600">0</p></div>
+                </div>
+
+                <div class="pt-4 border-t border-dashed border-slate-200">
+                    <p class="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Simulasi by Dimas Miftah</p>
+                    <div class="flex justify-center gap-4 text-[8px] font-bold text-indigo-500">
+                        <span>IG: @dimasmiftah_</span>
+                        <span>TikTok: @dimasmiftah_</span>
+                    </div>
+                </div>
             </div>
-            <button onclick="location.reload()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl mb-3 text-xs uppercase tracking-widest">Coba Lagi</button>
-            <button onclick="shareWA()" class="w-full bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-xs uppercase tracking-widest">Bagikan ke WA</button>
+
+            <div class="p-8 pt-0 space-y-3">
+                <button id="btn-save" onclick="downloadSertifikat()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">Simpan Gambar</button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="shareWA()" class="bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-[9px] uppercase">WA Share</button>
+                    <button onclick="location.reload()" class="bg-slate-100 text-slate-600 font-black py-4 rounded-2xl text-[9px] uppercase">Ulangi</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -193,7 +214,6 @@
             document.getElementById('tanya').innerText = item.soal;
             const box = document.getElementById('opsi-list'); box.innerHTML = "";
             
-            // ACAK OPSI
             let opsiAcak = [...item.opsi].sort(() => Math.random() - 0.5);
 
             opsiAcak.forEach(o => {
@@ -235,18 +255,43 @@
             
             const kat = document.getElementById('sel-kat').value;
             let statusText = "SIMULASI SELESAI";
+            let msg = "Terus asah kemampuanmu tiap hari!";
             let warna = "text-slate-400";
             
             if(kat === "TIU") {
                 statusText = skor >= 80 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 80)";
                 warna = skor >= 80 ? "text-emerald-500" : "text-red-500";
+                msg = skor >= 80 ? "Logika kamu mantap! Pertahankan!" : "Ayo perbanyak latihan deret dan silogisme.";
             } else if(kat === "TWK") {
                 statusText = skor >= 65 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 65)";
                 warna = skor >= 65 ? "text-emerald-500" : "text-red-500";
+                msg = skor >= 65 ? "Wawasan kebangsaanmu luar biasa!" : "Baca lagi tentang sejarah dan UUD 1945 ya.";
             }
             
             document.getElementById('hasil-status').innerText = statusText;
             document.getElementById('hasil-status').className = `text-[10px] font-black uppercase tracking-widest mb-4 ${warna}`;
+            document.getElementById('hasil-msg').innerText = msg;
+        }
+
+        function downloadSertifikat() {
+            const area = document.getElementById('area-sertifikat');
+            const btn = document.getElementById('btn-save');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            html2canvas(area, {
+                backgroundColor: "#ffffff",
+                scale: 3,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Skor_CPNS_DimasMiftah_${new Date().getTime()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                btn.innerText = "Simpan Gambar";
+                btn.disabled = false;
+            });
         }
 
         function shareWA() {
