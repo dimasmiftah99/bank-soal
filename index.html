@@ -16,7 +16,6 @@
         }
         .timer-low { color: #ef4444; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        /* Animasi masuk */
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -24,14 +23,18 @@
 <body class="min-h-screen">
 
     <div class="sticky top-0 z-50 bg-indigo-800 text-white p-4 shadow-lg">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="text-center">
-                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest">Sisa Waktu</p>
+        <div class="max-w-md mx-auto flex justify-between items-center px-2">
+            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all active:scale-90" title="Ke Beranda">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </button>
+
+            <div class="text-center flex-grow">
+                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none">Sisa Waktu</p>
                 <p id="timer" class="text-xl font-black">100:00</p>
             </div>
-            <div class="h-8 w-[1px] bg-white/20"></div>
-            <div class="text-center">
-                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest">Skor</p>
+            
+            <div class="text-right">
+                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none">Skor</p>
                 <p id="skor" class="text-xl font-black text-yellow-400">0</p>
             </div>
         </div>
@@ -117,7 +120,7 @@
         
         let db = [];
         let skor = 0;
-        let waktu = 100 * 60; // 100 Menit
+        let waktu = 100 * 60;
         let timerInterval;
 
         async function init() {
@@ -137,7 +140,6 @@
                     };
                 }).filter(x => x.soal);
 
-                // Auto-populate Jurusan
                 const list = [...new Set(db.filter(x => x.kat === "SKB").map(x => x.pend))];
                 const sel = document.getElementById('sel-pend');
                 list.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
@@ -148,6 +150,14 @@
             const kat = document.getElementById('sel-kat').value;
             const box = document.getElementById('box-jurusan');
             kat === "SKB" ? box.classList.remove('hidden') : box.classList.add('hidden');
+        }
+
+        // FUNGSI KE BERANDA BARU
+        function keBeranda() {
+            if(confirm("Kembali ke pemilihan soal? Waktu dan skor akan direset.")) {
+                clearInterval(timerInterval);
+                location.reload(); // Cara paling aman mereset semua sistem
+            }
         }
 
         function mulaiUjian() {
@@ -199,7 +209,6 @@
                         document.getElementById('skor').innerText = skor;
                     } else {
                         b.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
-                        // Tampilkan jawaban benar
                         document.querySelectorAll('#opsi-list button').forEach(btn => {
                             if(btn.innerText.trim() === item.kunci.trim()) btn.classList.add('text-emerald-600', 'font-black');
                         });
