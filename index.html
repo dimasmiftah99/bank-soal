@@ -3,125 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMULASI CAT CPNS - DIMAS MIFTAH</title>
+    <title>CAT CPNS PRO - DIMAS MIFTAH</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f0f4f8; 
-            display: flex;
-            flex-direction: column;
-            min-h-screen;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; display: flex; flex-direction: column; min-h-screen; }
         .timer-low { color: #ef4444; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #progress-bar { transition: width 1s linear; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div class="sticky top-0 z-50 bg-indigo-800 text-white p-4 shadow-lg">
-        <div class="max-w-md mx-auto flex justify-between items-center px-2">
-            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all active:scale-90" title="Ke Beranda">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="sticky top-0 z-50 bg-indigo-800 text-white shadow-lg">
+        <div class="max-w-md mx-auto p-4 flex justify-between items-center px-4">
+            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all active:scale-90">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </button>
-
-            <div class="text-center flex-grow">
-                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none">Sisa Waktu</p>
-                <p id="timer" class="text-xl font-black">100:00</p>
+            <div class="text-center">
+                <div id="live-badge" class="hidden flex items-center justify-center gap-1 mb-1">
+                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
+                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-tighter text-red-200">TESTING</span>
+                </div>
+                <p id="timer" class="text-xl font-black leading-none">100:00</p>
             </div>
-            
             <div class="text-right">
-                <p class="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none">Skor</p>
-                <p id="skor" class="text-xl font-black text-yellow-400">0</p>
+                <p class="text-[9px] uppercase font-bold opacity-70 tracking-widest leading-none mb-1 text-yellow-400">Poin</p>
+                <p id="skor" class="text-xl font-black leading-none">0</p>
             </div>
+        </div>
+        <div class="w-full h-1 bg-indigo-900">
+            <div id="progress-bar" class="h-full bg-yellow-400 w-full shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
         </div>
     </div>
 
-    <main class="max-w-md mx-auto w-full p-4 flex-grow mb-24">
-        
+    <main class="max-w-md mx-auto w-full p-4 flex-grow mb-28">
         <div id="setup-area" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6 fade-in">
             <div class="text-center space-y-2">
                 <h1 class="text-2xl font-black text-indigo-900 leading-tight">CAT SIMULASI CPNS</h1>
-                <p class="text-xs font-medium text-slate-500 uppercase tracking-widest italic">Semangat!!!</p>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-widest italic">Prepare for 2026</p>
             </div>
-
             <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kategori Soal</label>
-                    <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 mt-2 rounded-2xl bg-slate-50 font-bold text-xs outline-none border-none ring-1 ring-slate-100 focus:ring-indigo-500 transition-all">
-                        <option value="TIU">SKD - TIU (Intelegensia Umum)</option>
-                        <option value="TWK">SKD - TWK (Wawasan Kebangsaan)</option>
-                        <option value="SKB">SKB - KHUSUS JURUSAN</option>
-                    </select>
-                </div>
-
-                <div id="box-jurusan" class="hidden animate-in fade-in duration-300">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-indigo-600">Pilih Formasi/Jurusan</label>
-                    <select id="sel-pend" class="w-full p-4 mt-2 rounded-2xl bg-indigo-50 font-bold text-xs outline-none border-none text-indigo-700 ring-1 ring-indigo-100">
+                <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs border-none ring-1 ring-slate-100 focus:ring-indigo-500">
+                    <option value="TIU">SKD - TIU (Intelegensia Umum)</option>
+                    <option value="TWK">SKD - TWK (Wawasan Kebangsaan)</option>
+                    <option value="SKB">SKB - KHUSUS JURUSAN</option>
+                </select>
+                <div id="box-jurusan" class="hidden">
+                    <select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs border-none text-indigo-700 ring-1 ring-indigo-100">
                         <option value="">-- Pilih Jurusan --</option>
                     </select>
                 </div>
             </div>
-
-            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-[1.5rem] shadow-lg shadow-indigo-200 active:scale-95 transition-all uppercase text-xs tracking-[0.2em]">
-                Mulai Simulasi Sekarang
-            </button>
+            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.5rem] shadow-lg active:scale-95 transition-all uppercase text-[10px] tracking-widest">Mulai Simulasi</button>
         </div>
 
         <div id="quiz-area" class="hidden space-y-4 fade-in">
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 relative">
-                <div id="no-soal" class="inline-block bg-slate-100 px-4 py-1.5 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                    Pertanyaan Berikutnya
-                </div>
-                
-                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8 text-md lg:text-lg"></p>
-                
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8 text-md"></p>
                 <div id="opsi-list" class="space-y-3"></div>
-
                 <div id="bahas-box" class="hidden mt-8 p-6 bg-slate-900 rounded-[2rem] text-white">
-                    <div class="flex items-center space-x-2 mb-3 text-emerald-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <p id="kunci-text" class="font-black text-[10px] uppercase tracking-widest"></p>
-                    </div>
-                    <p id="bahas-text" class="text-slate-400 text-[11px] leading-relaxed italic mb-6"></p>
-                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-indigo-50 transition-colors">
-                        Lanjut ke Soal Berikutnya
-                    </button>
+                    <p id="kunci-text" class="font-black text-[10px] uppercase text-emerald-400 mb-2"></p>
+                    <p id="bahas-text" class="text-slate-400 text-[11px] leading-relaxed mb-6"></p>
+                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase tracking-widest">Soal Berikutnya</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-100 p-4 z-50">
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center px-4">
             <div>
-                <p class="text-slate-400 text-[8px] font-black uppercase tracking-[0.2em]">Developed by</p>
-                <p class="text-indigo-900 text-[10px] font-black uppercase tracking-widest">Dimas Miftah © 2026</p>
+                <p class="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Dimas Miftah © 2026</p>
+                <button onclick="shareWA()" class="text-indigo-600 text-[9px] font-black uppercase flex items-center gap-1 mt-0.5">
+                    <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.795 0-.855.448-1.274.607-1.441.159-.166.346-.208.462-.208s.231.001.332.005c.101.005.255-.033.4-.348.144-.315.491-1.203.534-1.289.043-.087.072-.188.014-.304-.058-.115-.087-.188-.173-.289-.087-.1-.181-.223-.258-.334-.087-.124-.178-.253-.076-.43.102-.177.452-.746.969-1.207.666-.594 1.232-.776 1.405-.776s.317.065.433.19c.115.125.433.405.549.544.115.139.231.347.115.544s-.173.289-.26.405c-.087.115-.181.246-.072.43.109.184.484.796 1.041 1.288.718.636 1.323.834 1.512.922.188.088.298.073.405-.05s.462-.534.577-.714c.116-.18.231-.151.389-.094.159.058 1.011.477 1.184.563s.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
+                    Bagikan Hasil
+                </button>
             </div>
-            
-            <div class="flex items-center gap-4">
-                <a href="https://www.instagram.com/dimasmiftah_/" target="_blank" class="text-indigo-600 hover:scale-110 active:scale-90 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>
-                <a href="https://www.tiktok.com/@dimasmiftah_" target="_blank" class="text-indigo-600 hover:scale-110 active:scale-90 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
-                </a>
+            <div class="flex gap-4">
+                <a href="https://www.instagram.com/dimasmiftah_/" target="_blank" class="text-indigo-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                <a href="https://www.tiktok.com/@dimasmiftah_" target="_blank" class="text-indigo-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>
             </div>
         </div>
     </footer>
 
     <script>
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5MwULy0Z0r6wFGeklJg1wZ6WTGyX1mArVzu6Nx6UF6hLngy7PsGngdmHvzsAQOvCx2NQeIfxhnx1W/pub?output=csv&t=" + new Date().getTime();
-        
-        let db = [];
-        let skor = 0;
-        let waktu = 100 * 60;
-        let timerInterval;
+        let db = [], skor = 0, waktu = 100 * 60, totalWaktu = 100 * 60, timerInterval;
+
+        // Sound System
+        const playSound = (freq, type) => {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = type; osc.frequency.value = freq;
+            osc.connect(g); g.connect(ctx.destination);
+            g.gain.setValueAtTime(0.1, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
+            osc.start(); osc.stop(ctx.currentTime + 0.5);
+        };
 
         async function init() {
             try {
@@ -130,56 +112,43 @@
                 const baris = txt.split(/\r?\n/).slice(1);
                 db = baris.map(r => {
                     const c = r.split(/[,](?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    return {
-                        kat: c[0]?.replace(/"/g, '').trim(),
-                        pend: c[1]?.replace(/"/g, '').trim(),
-                        soal: c[3]?.replace(/"/g, '').trim(),
-                        opsi: c[4]?.replace(/"/g, '').split(";"),
-                        kunci: c[5]?.replace(/"/g, '').trim(),
-                        bahas: c[6]?.replace(/"/g, '').trim()
-                    };
+                    return { kat: c[0]?.replace(/"/g, '').trim(), pend: c[1]?.replace(/"/g, '').trim(), soal: c[3]?.replace(/"/g, '').trim(), opsi: c[4]?.replace(/"/g, '').split(";"), kunci: c[5]?.replace(/"/g, '').trim(), bahas: c[6]?.replace(/"/g, '').trim() };
                 }).filter(x => x.soal);
-
                 const list = [...new Set(db.filter(x => x.kat === "SKB").map(x => x.pend))];
                 const sel = document.getElementById('sel-pend');
                 list.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
-            } catch (e) { console.error("Database Error"); }
+            } catch (e) { alert("Gagal koneksi database!"); }
         }
 
         function cekKategori() {
             const kat = document.getElementById('sel-kat').value;
-            const box = document.getElementById('box-jurusan');
-            kat === "SKB" ? box.classList.remove('hidden') : box.classList.add('hidden');
+            document.getElementById('box-jurusan').classList.toggle('hidden', kat !== "SKB");
         }
 
-        // FUNGSI KE BERANDA BARU
-        function keBeranda() {
-            if(confirm("Kembali ke pemilihan soal? Waktu dan skor akan direset.")) {
-                clearInterval(timerInterval);
-                location.reload(); // Cara paling aman mereset semua sistem
-            }
-        }
+        function keBeranda() { if(confirm("Keluar dari simulasi? Skor akan hilang.")) location.reload(); }
 
         function mulaiUjian() {
             document.getElementById('setup-area').classList.add('hidden');
             document.getElementById('quiz-area').classList.remove('hidden');
-            startTimer();
-            ambilSoal();
+            document.getElementById('live-badge').classList.remove('hidden');
+            document.getElementById('kat-aktif').innerText = document.getElementById('sel-kat').value;
+            startTimer(); ambilSoal();
         }
 
         function startTimer() {
             timerInterval = setInterval(() => {
-                let m = Math.floor(waktu / 60);
-                let s = waktu % 60;
+                let m = Math.floor(waktu / 60), s = waktu % 60;
                 document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                document.getElementById('progress-bar').style.width = (waktu / totalWaktu * 100) + "%";
                 if (waktu <= 60) document.getElementById('timer').classList.add('timer-low');
-                if (waktu <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Waktu Habis! Skor Akhir: " + skor);
-                    location.reload();
-                }
+                if (waktu <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); location.reload(); }
                 waktu--;
             }, 1000);
+        }
+
+        function shareWA() {
+            const text = `Halo! Saya baru saja mencoba Simulasi CAT CPNS di Dimas Miftah Pro. Skor saya: ${skor} poin! Ayo coba juga: ${window.location.href}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function ambilSoal() {
@@ -187,33 +156,29 @@
             const pend = document.getElementById('sel-pend').value;
             let filtered = db.filter(x => x.kat === kat);
             if(kat === "SKB") filtered = filtered.filter(x => x.pend === pend);
-
             if(filtered.length === 0) return alert("Soal tidak ditemukan!");
 
             const item = filtered[Math.floor(Math.random() * filtered.length)];
             document.getElementById('bahas-box').classList.add('hidden');
             document.getElementById('tanya').innerText = item.soal;
-            
-            const box = document.getElementById('opsi-list');
-            box.innerHTML = "";
+            const box = document.getElementById('opsi-list'); box.innerHTML = "";
 
             item.opsi.forEach(o => {
                 const b = document.createElement('button');
-                b.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-slate-50 font-bold text-xs text-slate-600 transition hover:bg-slate-100 active:scale-95";
+                b.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-slate-50 font-bold text-xs text-slate-600 transition active:scale-95";
                 b.innerText = o.trim();
                 b.onclick = () => {
                     document.querySelectorAll('#opsi-list button').forEach(btn => btn.disabled = true);
                     if(o.trim() === item.kunci.trim()) {
                         b.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
-                        skor += 5;
-                        document.getElementById('skor').innerText = skor;
+                        skor += 5; document.getElementById('skor').innerText = skor;
+                        playSound(880, 'sine');
                     } else {
                         b.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
-                        document.querySelectorAll('#opsi-list button').forEach(btn => {
-                            if(btn.innerText.trim() === item.kunci.trim()) btn.classList.add('text-emerald-600', 'font-black');
-                        });
+                        document.querySelectorAll('#opsi-list button').forEach(btn => { if(btn.innerText.trim() === item.kunci.trim()) btn.classList.add('text-emerald-600', 'font-black'); });
+                        playSound(220, 'square');
                     }
-                    document.getElementById('kunci-text').innerText = "Kunci Jawaban: " + item.kunci;
+                    document.getElementById('kunci-text').innerText = "Kunci: " + item.kunci;
                     document.getElementById('bahas-text').innerText = item.bahas;
                     document.getElementById('bahas-box').classList.remove('hidden');
                 };
@@ -221,7 +186,6 @@
             });
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
-
         init();
     </script>
 </body>
