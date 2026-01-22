@@ -50,6 +50,9 @@
             <div class="text-center space-y-2">
                 <h1 class="text-2xl font-black text-indigo-900 leading-tight">CAT SIMULASI CPNS</h1>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Developed by Dimas Miftah</p>
+                <a href="https://trakteer.id/dimasmiftah_" target="_blank" class="inline-block mt-2 text-[9px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors uppercase tracking-widest">
+                    ☕ Traktir Kopi Developer
+                </a>
             </div>
             <div class="space-y-4">
                 <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs ring-1 ring-slate-100 outline-none">
@@ -123,9 +126,11 @@
         <div class="max-w-md mx-auto flex justify-between items-center px-4">
             <div>
                 <p class="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Dimas Miftah © 2026</p>
-                <div class="flex gap-3 mt-1 text-indigo-600">
+                <div class="flex gap-3 mt-1 text-indigo-600 items-center">
                     <a href="https://instagram.com/dimasmiftah_"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg></a>
                     <a href="https://tiktok.com/@dimasmiftah_"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>
+                    <span class="text-slate-300">|</span>
+                    <a href="https://trakteer.id/dimasmiftah_" target="_blank" class="text-[8px] font-black uppercase tracking-tighter hover:underline">Support Project</a>
                 </div>
             </div>
             <button onclick="finishUjian()" class="bg-red-50 text-red-600 text-[9px] font-black px-4 py-2 rounded-full uppercase">Selesai Ujian</button>
@@ -136,7 +141,6 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyohFZLV5XmuMhuW13uYNY4zizjxjnPdYaGRpReVKXRpHXevE7P_ZfxyfBFZLVE9OxEPw/exec"; 
         let db = [], filteredSoal = [], skor = 0, benar = 0, salah = 0, waktu = 100 * 60, timerInterval, totalSoalKategori = 0, soalDikerjakan = 0;
 
-        // Sound Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) {
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
@@ -254,28 +258,11 @@
         }
 
        function shareWA() {
-    // Teks yang akan dikirim ke WhatsApp
-    const status = document.getElementById('hasil-status').innerText;
-    const linkWeb = window.location.href;
-    
-    const text = `🏆 *HASIL SIMULASI CAT CPNS* 🏆
---------------------------------------------
-🎯 *Total Skor:* ${skor}
-✅ *Benar:* ${benar}
-❌ *Salah:* ${salah}
-📢 *Status:* ${status}
-
-🚀 *Coba Simulasi Gratis di:*
-${linkWeb}
-
---------------------------------------------
-📱 *Developed by Dimas Miftah*
-📸 *Instagram:* https://instagram.com/dimasmiftah_
-🎥 *TikTok:* https://tiktok.com/@dimasmiftah_`;
-
-    // Membuka WhatsApp dengan teks yang sudah diformat
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-}
+            const status = document.getElementById('hasil-status').innerText;
+            const linkWeb = window.location.href;
+            const text = `🏆 *HASIL SIMULASI CAT CPNS* 🏆\n--------------------------------------------\n🎯 *Total Skor:* ${skor}\n✅ *Benar:* ${benar}\n❌ *Salah:* ${salah}\n📢 *Status:* ${status}\n\n🚀 *Coba Simulasi Gratis di:*\n${linkWeb}\n\n--------------------------------------------\n📱 *Developed by Dimas Miftah*\n📸 *Instagram:* https://instagram.com/dimasmiftah_\n🎥 *TikTok:* https://tiktok.com/@dimasmiftah_`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
 
         init();
     </script>
