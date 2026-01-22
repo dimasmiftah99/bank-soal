@@ -31,7 +31,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-widest text-red-200">TESTING</span>
+                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-widest text-red-200">READY</span>
                 </div>
             </div>
 
@@ -61,8 +61,8 @@
             </div>
             <div class="space-y-4">
                 <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs ring-1 ring-slate-100 outline-none">
-                    <option value="TIU">SKD - TIU</option>
-                    <option value="TWK">SKD - TWK</option>
+                    <option value="TIU">SKD - TIU (Pass: 80)</option>
+                    <option value="TWK">SKD - TWK (Pass: 65)</option>
                     <option value="SKB">SKB - KHUSUS JURUSAN</option>
                 </select>
                 <div id="box-jurusan" class="hidden"><select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs text-indigo-700 ring-1 ring-indigo-100 outline-none"><option value="">-- Pilih Jurusan --</option></select></div>
@@ -87,14 +87,15 @@
     <div id="modal-hasil" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-indigo-950/80 backdrop-blur-sm fade-in">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl">
             <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🏆</span></div>
-            <h2 id="hasil-title" class="text-2xl font-black text-indigo-900 mb-2">Luar Biasa!</h2>
-            <p id="hasil-msg" class="text-slate-500 text-xs mb-8">Kamu telah menyelesaikan simulasi dengan baik.</p>
+            <h2 id="hasil-title" class="text-2xl font-black text-indigo-900 mb-1">Selesai!</h2>
+            <p id="hasil-status" class="text-[10px] font-black uppercase tracking-widest mb-4 text-slate-400">STATUS</p>
+            <p id="hasil-msg" class="text-slate-500 text-xs mb-8">Hasil simulasi kamu telah direkap.</p>
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Benar</p><p id="hasil-benar" class="text-xl font-black text-emerald-500">0</p></div>
                 <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Skor Akhir</p><p id="hasil-skor" class="text-xl font-black text-indigo-600">0</p></div>
             </div>
             <button onclick="location.reload()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl mb-3 text-xs uppercase tracking-widest">Coba Lagi</button>
-            <button onclick="shareWA()" class="w-full bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-xs uppercase tracking-widest">Bagikan Hasil</button>
+            <button onclick="shareWA()" class="w-full bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-xs uppercase tracking-widest">Bagikan ke WA</button>
         </div>
     </div>
 
@@ -122,7 +123,10 @@
                 const osc = ctx.createOscillator(); const gain = ctx.createGain();
                 osc.connect(gain); gain.connect(ctx.destination);
                 if (isCorrect) { osc.frequency.setValueAtTime(880, ctx.currentTime); osc.type = 'sine'; }
-                else { osc.frequency.setValueAtTime(220, ctx.currentTime); osc.type = 'square'; }
+                else { 
+                    osc.frequency.setValueAtTime(220, ctx.currentTime); osc.type = 'square'; 
+                    if(navigator.vibrate) navigator.vibrate(200); 
+                }
                 gain.gain.setValueAtTime(0.1, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 osc.start(); osc.stop(ctx.currentTime + 0.3);
@@ -157,6 +161,7 @@
             let filtered = db.filter(x => x.kat === kat);
             if(kat === "SKB") filtered = filtered.filter(x => x.pend === pend);
             if(filtered.length === 0) return alert("Soal tidak ditemukan!");
+            
             totalSoalKategori = filtered.length;
             document.getElementById('counter-soal').innerText = `0/${totalSoalKategori}`;
             document.getElementById('setup-area').classList.add('hidden');
@@ -183,10 +188,15 @@
             let filtered = db.filter(x => x.kat === kat);
             if(kat === "SKB") filtered = filtered.filter(x => x.pend === pend);
             const item = filtered[Math.floor(Math.random() * filtered.length)];
+            
             document.getElementById('bahas-box').classList.add('hidden');
             document.getElementById('tanya').innerText = item.soal;
             const box = document.getElementById('opsi-list'); box.innerHTML = "";
-            item.opsi.forEach(o => {
+            
+            // ACAK OPSI
+            let opsiAcak = [...item.opsi].sort(() => Math.random() - 0.5);
+
+            opsiAcak.forEach(o => {
                 const b = document.createElement('button');
                 b.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-slate-50 font-bold text-xs text-slate-600 transition active:scale-95";
                 b.innerText = o.trim();
@@ -222,27 +232,46 @@
             document.getElementById('modal-hasil').classList.remove('hidden');
             document.getElementById('hasil-benar').innerText = benar;
             document.getElementById('hasil-skor').innerText = skor;
+            
+            const kat = document.getElementById('sel-kat').value;
+            let statusText = "SIMULASI SELESAI";
+            let warna = "text-slate-400";
+            
+            if(kat === "TIU") {
+                statusText = skor >= 80 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 80)";
+                warna = skor >= 80 ? "text-emerald-500" : "text-red-500";
+            } else if(kat === "TWK") {
+                statusText = skor >= 65 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 65)";
+                warna = skor >= 65 ? "text-emerald-500" : "text-red-500";
+            }
+            
+            document.getElementById('hasil-status').innerText = statusText;
+            document.getElementById('hasil-status').className = `text-[10px] font-black uppercase tracking-widest mb-4 ${warna}`;
         }
 
         function shareWA() {
-    // Kita ambil nama kategori langsung dari pilihan dropdown agar pasti ada teksnya
-    const kategoriNama = document.getElementById('sel-kat').value;
-    const jurusanNama = document.getElementById('sel-pend').value;
-    
-    // Gabungkan nama kategori + jurusan kalau dia SKB
-    const infoKategori = (kategoriNama === "SKB") ? `SKB ${jurusanNama}` : kategoriNama;
+            const kategoriNama = document.getElementById('sel-kat').value;
+            const jurusanNama = document.getElementById('sel-pend').value;
+            const infoKategori = (kategoriNama === "SKB") ? `SKB ${jurusanNama}` : kategoriNama;
+            const statusPG = document.getElementById('hasil-status').innerText;
 
-    const text = `🏆 HASIL SIMULASI CPNS\n` +
-                 `--------------------------\n` +
-                 `Kategori: ${infoKategori}\n` +
-                 `Benar: ${benar} | Salah: ${salah}\n` +
-                 `Skor Akhir: ${skor}\n` +
-                 `--------------------------\n` +
-                 `Coba simulasi di sini:\n${window.location.href}`;
-    
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-}
-        
+            const text = `🏆 *HASIL SIMULASI CAT CPNS* 🏆\n` +
+                         `--------------------------------------------\n` +
+                         `📊 *Kategori:* ${infoKategori}\n` +
+                         `✅ *Benar:* ${benar}\n` +
+                         `❌ *Salah:* ${salah}\n` +
+                         `✨ *Skor Akhir:* ${skor}\n` +
+                         `📢 *Status:* ${statusPG}\n` +
+                         `--------------------------------------------\n\n` +
+                         `🚀 *Coba Simulasi Gratis di Sini:* \n` +
+                         `${window.location.href}\n\n` +
+                         `📱 *Developed by Dimas Miftah:* \n` +
+                         `📸 IG: instagram.com/dimasmiftah_\n` +
+                         `🎵 TikTok: tiktok.com/@dimasmiftah_`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
         init();
     </script>
 </body>
