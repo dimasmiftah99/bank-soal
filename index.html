@@ -5,105 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAT CPNS PRO - DIMAS MIFTAH</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; display: flex; flex-direction: column; min-h-screen; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; display: flex; flex-direction: column; min-h-screen; overflow-x: hidden; }
         .timer-low { color: #ef4444; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         #progress-bar { transition: width 1s linear; }
+        .modal-active { overflow: hidden; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div class="sticky top-0 z-50 bg-indigo-800 text-white shadow-lg">
+    <div class="sticky top-0 z-40 bg-indigo-800 text-white shadow-lg">
         <div class="max-w-md mx-auto p-4 flex justify-between items-center px-4">
-            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all active:scale-90">
+            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </button>
             <div class="text-center">
-                <div id="live-badge" class="hidden flex items-center justify-center gap-1 mb-1">
-                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
-                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-tighter text-red-200">TESTING</span>
+                <p id="timer" class="text-xl font-black leading-none mb-1">100:00</p>
+                <div id="live-badge" class="hidden flex items-center justify-center gap-1">
+                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-widest text-indigo-300">TIU</span>
                 </div>
-                <p id="timer" class="text-xl font-black leading-none">100:00</p>
             </div>
-            <div class="text-right">
-                <p class="text-[9px] uppercase font-bold opacity-70 tracking-widest leading-none mb-1 text-yellow-400">Poin</p>
-                <p id="skor" class="text-xl font-black leading-none">0</p>
+            <div class="text-right flex gap-3">
+                <div class="text-center">
+                    <p class="text-[7px] uppercase font-bold opacity-60 mb-1">Proses</p>
+                    <p id="counter-soal" class="text-xs font-black text-emerald-400">0/0</p>
+                </div>
+                <div class="text-center border-l border-white/10 pl-3">
+                    <p class="text-[7px] uppercase font-bold opacity-60 mb-1 text-yellow-400">Skor</p>
+                    <p id="skor" class="text-xs font-black">0</p>
+                </div>
             </div>
         </div>
         <div class="w-full h-1 bg-indigo-900">
-            <div id="progress-bar" class="h-full bg-yellow-400 w-full shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
+            <div id="progress-bar" class="h-full bg-yellow-400 w-full shadow-[0_0_10px_#facc15]"></div>
         </div>
     </div>
 
     <main class="max-w-md mx-auto w-full p-4 flex-grow mb-28">
         <div id="setup-area" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6 fade-in">
             <div class="text-center space-y-2">
-                <h1 class="text-2xl font-black text-indigo-900 leading-tight">CAT SIMULASI CPNS</h1>
-                <p class="text-xs font-medium text-slate-400 uppercase tracking-widest italic">Prepare for 2026</p>
+                <h1 class="text-2xl font-black text-indigo-900">CAT SIMULASI</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">By Dimas Miftah</p>
             </div>
             <div class="space-y-4">
-                <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs border-none ring-1 ring-slate-100 focus:ring-indigo-500">
-                    <option value="TIU">SKD - TIU (Intelegensia Umum)</option>
-                    <option value="TWK">SKD - TWK (Wawasan Kebangsaan)</option>
+                <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs ring-1 ring-slate-100 outline-none">
+                    <option value="TIU">SKD - TIU</option>
+                    <option value="TWK">SKD - TWK</option>
                     <option value="SKB">SKB - KHUSUS JURUSAN</option>
                 </select>
-                <div id="box-jurusan" class="hidden">
-                    <select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs border-none text-indigo-700 ring-1 ring-indigo-100">
-                        <option value="">-- Pilih Jurusan --</option>
-                    </select>
-                </div>
+                <div id="box-jurusan" class="hidden"><select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs text-indigo-700 ring-1 ring-indigo-100 outline-none"><option value="">-- Pilih Jurusan --</option></select></div>
             </div>
-            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.5rem] shadow-lg active:scale-95 transition-all uppercase text-[10px] tracking-widest">Mulai Simulasi</button>
+            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.5rem] shadow-lg active:scale-95 uppercase text-[10px] tracking-widest transition-all">Mulai Simulasi</button>
         </div>
 
         <div id="quiz-area" class="hidden space-y-4 fade-in">
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8 text-md"></p>
-                <div id="opsi-list" class="space-y-3"></div>
-                <div id="bahas-box" class="hidden mt-8 p-6 bg-slate-900 rounded-[2rem] text-white">
+            <div class="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 min-h-[300px] flex flex-col">
+                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8 text-md lg:text-lg"></p>
+                <div id="opsi-list" class="space-y-3 mb-6"></div>
+                <div id="bahas-box" class="hidden mt-auto p-6 bg-slate-900 rounded-[2rem] text-white fade-in">
                     <p id="kunci-text" class="font-black text-[10px] uppercase text-emerald-400 mb-2"></p>
-                    <p id="bahas-text" class="text-slate-400 text-[11px] leading-relaxed mb-6"></p>
-                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase tracking-widest">Soal Berikutnya</button>
+                    <p id="bahas-text" class="text-slate-400 text-[11px] leading-relaxed mb-6 italic"></p>
+                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all">Lanjut Soal</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 z-50">
+    <div id="modal-hasil" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-indigo-950/80 backdrop-blur-sm fade-in">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-4xl">🏆</span>
+            </div>
+            <h2 id="hasil-title" class="text-2xl font-black text-indigo-900 mb-2">Luar Biasa!</h2>
+            <p id="hasil-msg" class="text-slate-500 text-xs mb-8">Kamu telah menyelesaikan simulasi dengan baik.</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-50 p-4 rounded-3xl">
+                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Benar</p>
+                    <p id="hasil-benar" class="text-xl font-black text-emerald-500">0</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-3xl">
+                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Skor Akhir</p>
+                    <p id="hasil-skor" class="text-xl font-black text-indigo-600">0</p>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl mb-3 text-xs uppercase tracking-widest">Coba Lagi</button>
+            <button onclick="shareWA()" class="w-full bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-xs uppercase tracking-widest">Bagikan ke WA</button>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center px-4">
             <div>
                 <p class="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Dimas Miftah © 2026</p>
-                <button onclick="shareWA()" class="text-indigo-600 text-[9px] font-black uppercase flex items-center gap-1 mt-0.5">
-                    <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.795 0-.855.448-1.274.607-1.441.159-.166.346-.208.462-.208s.231.001.332.005c.101.005.255-.033.4-.348.144-.315.491-1.203.534-1.289.043-.087.072-.188.014-.304-.058-.115-.087-.188-.173-.289-.087-.1-.181-.223-.258-.334-.087-.124-.178-.253-.076-.43.102-.177.452-.746.969-1.207.666-.594 1.232-.776 1.405-.776s.317.065.433.19c.115.125.433.405.549.544.115.139.231.347.115.544s-.173.289-.26.405c-.087.115-.181.246-.072.43.109.184.484.796 1.041 1.288.718.636 1.323.834 1.512.922.188.088.298.073.405-.05s.462-.534.577-.714c.116-.18.231-.151.389-.094.159.058 1.011.477 1.184.563s.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
-                    Bagikan Hasil
-                </button>
+                <div class="flex gap-3 mt-1 text-indigo-600 opacity-60">
+                    <a href="https://www.instagram.com/dimasmiftah_/" target="_blank"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg></a>
+                    <a href="https://www.tiktok.com/@dimasmiftah_" target="_blank"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>
+                </div>
             </div>
-            <div class="flex gap-4">
-                <a href="https://www.instagram.com/dimasmiftah_/" target="_blank" class="text-indigo-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-                <a href="https://www.tiktok.com/@dimasmiftah_" target="_blank" class="text-indigo-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>
-            </div>
+            <button onclick="finishUjian()" class="bg-red-50 text-red-600 text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest">Selesai Ujian</button>
         </div>
     </footer>
 
     <script>
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5MwULy0Z0r6wFGeklJg1wZ6WTGyX1mArVzu6Nx6UF6hLngy7PsGngdmHvzsAQOvCx2NQeIfxhnx1W/pub?output=csv&t=" + new Date().getTime();
-        let db = [], skor = 0, waktu = 100 * 60, totalWaktu = 100 * 60, timerInterval;
-
-        // Sound System
-        const playSound = (freq, type) => {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.type = type; osc.frequency.value = freq;
-            osc.connect(g); g.connect(ctx.destination);
-            g.gain.setValueAtTime(0.1, ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
-            osc.start(); osc.stop(ctx.currentTime + 0.5);
-        };
+        let db = [], skor = 0, benar = 0, waktu = 100 * 60, totalWaktu = 100 * 60, timerInterval, soalDikerjakan = 0, totalSoalKategori = 0;
 
         async function init() {
             try {
@@ -117,7 +129,7 @@
                 const list = [...new Set(db.filter(x => x.kat === "SKB").map(x => x.pend))];
                 const sel = document.getElementById('sel-pend');
                 list.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
-            } catch (e) { alert("Gagal koneksi database!"); }
+            } catch (e) { alert("Error Database!"); }
         }
 
         function cekKategori() {
@@ -125,13 +137,21 @@
             document.getElementById('box-jurusan').classList.toggle('hidden', kat !== "SKB");
         }
 
-        function keBeranda() { if(confirm("Keluar dari simulasi? Skor akan hilang.")) location.reload(); }
+        function keBeranda() { if(confirm("Reset simulasi?")) location.reload(); }
 
         function mulaiUjian() {
+            const kat = document.getElementById('sel-kat').value;
+            const pend = document.getElementById('sel-pend').value;
+            let filtered = db.filter(x => x.kat === kat);
+            if(kat === "SKB") filtered = filtered.filter(x => x.pend === pend);
+            if(filtered.length === 0) return alert("Soal tidak ditemukan!");
+            
+            totalSoalKategori = filtered.length;
+            document.getElementById('counter-soal').innerText = `0/${totalSoalKategori}`;
             document.getElementById('setup-area').classList.add('hidden');
             document.getElementById('quiz-area').classList.remove('hidden');
             document.getElementById('live-badge').classList.remove('hidden');
-            document.getElementById('kat-aktif').innerText = document.getElementById('sel-kat').value;
+            document.getElementById('kat-aktif').innerText = kat;
             startTimer(); ambilSoal();
         }
 
@@ -141,14 +161,9 @@
                 document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
                 document.getElementById('progress-bar').style.width = (waktu / totalWaktu * 100) + "%";
                 if (waktu <= 60) document.getElementById('timer').classList.add('timer-low');
-                if (waktu <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); location.reload(); }
+                if (waktu <= 0) finishUjian();
                 waktu--;
             }, 1000);
-        }
-
-        function shareWA() {
-            const text = `Halo! Saya baru saja mencoba Simulasi CAT CPNS di Dimas Miftah Pro. Skor saya: ${skor} poin! Ayo coba juga: ${window.location.href}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function ambilSoal() {
@@ -156,7 +171,6 @@
             const pend = document.getElementById('sel-pend').value;
             let filtered = db.filter(x => x.kat === kat);
             if(kat === "SKB") filtered = filtered.filter(x => x.pend === pend);
-            if(filtered.length === 0) return alert("Soal tidak ditemukan!");
 
             const item = filtered[Math.floor(Math.random() * filtered.length)];
             document.getElementById('bahas-box').classList.add('hidden');
@@ -168,15 +182,17 @@
                 b.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-slate-50 font-bold text-xs text-slate-600 transition active:scale-95";
                 b.innerText = o.trim();
                 b.onclick = () => {
+                    soalDikerjakan++;
+                    document.getElementById('counter-soal').innerText = `${soalDikerjakan}/${totalSoalKategori}`;
                     document.querySelectorAll('#opsi-list button').forEach(btn => btn.disabled = true);
                     if(o.trim() === item.kunci.trim()) {
                         b.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
-                        skor += 5; document.getElementById('skor').innerText = skor;
-                        playSound(880, 'sine');
+                        skor += 5; benar++;
+                        document.getElementById('skor').innerText = skor;
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#4f46e5', '#10b981', '#facc15'] });
                     } else {
                         b.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
                         document.querySelectorAll('#opsi-list button').forEach(btn => { if(btn.innerText.trim() === item.kunci.trim()) btn.classList.add('text-emerald-600', 'font-black'); });
-                        playSound(220, 'square');
                     }
                     document.getElementById('kunci-text').innerText = "Kunci: " + item.kunci;
                     document.getElementById('bahas-text').innerText = item.bahas;
@@ -186,6 +202,21 @@
             });
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
+
+        function finishUjian() {
+            clearInterval(timerInterval);
+            document.getElementById('modal-hasil').classList.remove('hidden');
+            document.getElementById('hasil-benar').innerText = benar;
+            document.getElementById('hasil-skor').innerText = skor;
+            if(skor < 50) { document.getElementById('hasil-title').innerText = "Tetap Semangat!"; document.getElementById('hasil-msg').innerText = "Terus berlatih untuk hasil yang lebih baik."; }
+            document.body.classList.add('modal-active');
+        }
+
+        function shareWA() {
+            const text = `🏆 HASIL SIMULASI CPNS\nKategori: ${document.getElementById('kat-aktif').innerText}\nBenar: ${benar} Soal\nSkor: ${skor}\n\nCek skor kamu di sini:\n${window.location.href}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
         init();
     </script>
 </body>
