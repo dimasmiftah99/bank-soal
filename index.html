@@ -225,8 +225,23 @@
         }
 
         function shareWA() {
-            const text = `🏆 HASIL SIMULASI CPNS\nBenar: ${benar} | Salah: ${salah}\nSkor: ${skor}\nCek di: ${window.location.href}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    // Kita ambil nama kategori langsung dari pilihan dropdown agar pasti ada teksnya
+    const kategoriNama = document.getElementById('sel-kat').value;
+    const jurusanNama = document.getElementById('sel-pend').value;
+    
+    // Gabungkan nama kategori + jurusan kalau dia SKB
+    const infoKategori = (kategoriNama === "SKB") ? `SKB ${jurusanNama}` : kategoriNama;
+
+    const text = `🏆 HASIL SIMULASI CPNS\n` +
+                 `--------------------------\n` +
+                 `Kategori: ${infoKategori}\n` +
+                 `Benar: ${benar} | Salah: ${salah}\n` +
+                 `Skor Akhir: ${skor}\n` +
+                 `--------------------------\n` +
+                 `Coba simulasi di sini:\n${window.location.href}`;
+    
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
         }
         init();
     </script>
