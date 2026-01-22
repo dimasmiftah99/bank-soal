@@ -253,10 +253,29 @@
             });
         }
 
-        function shareWA() {
-            const txt = `🏆 *HASIL SIMULASI CAT CPNS*\n\n🎯 Skor: ${skor}\n✅ Benar: ${benar}\n❌ Salah: ${salah}\n📢 Status: ${document.getElementById('hasil-status').innerText}\n\nby Dimas Miftah`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
-        }
+       function shareWA() {
+    // Teks yang akan dikirim ke WhatsApp
+    const status = document.getElementById('hasil-status').innerText;
+    const linkWeb = window.location.href;
+    
+    const text = `🏆 *HASIL SIMULASI CAT CPNS* 🏆
+--------------------------------------------
+🎯 *Total Skor:* ${skor}
+✅ *Benar:* ${benar}
+❌ *Salah:* ${salah}
+📢 *Status:* ${status}
+
+🚀 *Coba Simulasi Gratis di:*
+${linkWeb}
+
+--------------------------------------------
+📱 *Developed by Dimas Miftah*
+📸 *Instagram:* https://instagram.com/dimasmiftah_
+🎥 *TikTok:* https://tiktok.com/@dimasmiftah_`;
+
+    // Membuka WhatsApp dengan teks yang sudah diformat
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
 
         init();
     </script>
