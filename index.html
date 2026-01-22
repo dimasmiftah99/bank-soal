@@ -9,17 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; display: flex; flex-direction: column; min-height: 100vh; -webkit-user-select: none; user-select: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; -webkit-user-select: none; user-select: none; }
         .timer-low { color: #ef4444; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        #progress-bar { transition: width 1s linear; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .loader { border-top-color: #4f46e5; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
     <div id="loading-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
         <div class="loader w-12 h-12 border-4 border-slate-200 rounded-full mb-4"></div>
@@ -27,191 +24,156 @@
     </div>
 
     <div class="sticky top-0 z-40 bg-indigo-800 text-white shadow-lg">
-        <div class="max-w-md mx-auto p-4 flex justify-between items-center px-4">
-            <button onclick="keBeranda()" class="hover:bg-white/20 p-2 rounded-xl transition-all">
+        <div class="max-w-md mx-auto p-4 flex justify-between items-center">
+            <button onclick="location.reload()" class="p-2 rounded-xl hover:bg-white/20 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </button>
-            
             <div class="text-center">
-                <p id="timer" class="text-xl font-black leading-none mb-1">100:00</p>
+                <p id="timer" class="text-xl font-black mb-1">100:00</p>
                 <div id="live-badge" class="hidden flex items-center justify-center gap-1">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
-                    <span id="kat-aktif" class="text-[8px] font-black uppercase tracking-widest text-red-200">READY</span>
+                    <span id="kat-aktif" class="text-[8px] font-black uppercase text-yellow-400">READY</span>
                 </div>
             </div>
-
-            <div class="flex items-center gap-2 border-l border-white/20 pl-3">
-                <div class="text-center">
-                    <p class="text-[7px] font-bold opacity-60 uppercase mb-0.5">Benar</p>
-                    <p id="header-benar" class="text-[10px] font-black text-emerald-400">0</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-[7px] font-bold opacity-60 uppercase mb-0.5">Salah</p>
-                    <p id="header-salah" class="text-[10px] font-black text-red-400">0</p>
-                </div>
-                <div class="text-center bg-white/10 px-2 py-1 rounded-lg">
-                    <p class="text-[7px] font-bold text-yellow-400 uppercase mb-0.5">Skor</p>
-                    <p id="skor" class="text-xs font-black">0</p>
-                </div>
+            <div class="bg-white/10 px-3 py-1 rounded-lg text-center">
+                <p class="text-[7px] font-bold text-yellow-400 uppercase">Skor</p>
+                <p id="skor" class="text-xs font-black">0</p>
             </div>
         </div>
-        <div class="w-full h-1 bg-indigo-900"><div id="progress-bar" class="h-full bg-yellow-400 w-full shadow-[0_0_10px_#facc15]"></div></div>
+        <div class="w-full h-1 bg-indigo-900"><div id="progress-bar" class="h-full bg-yellow-400 w-full transition-all duration-1000"></div></div>
     </div>
 
     <main class="max-w-md mx-auto w-full p-4 flex-grow mb-28">
-        <div id="setup-area" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6 fade-in">
+        <div id="setup-area" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6">
             <div class="text-center space-y-2">
-                <h1 class="text-2xl font-black text-indigo-900 leading-tight">CAT SIMULASI CPNS</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Developed by Dimas Miftah</p>
+                <h1 class="text-2xl font-black text-indigo-900">CAT SIMULASI CPNS</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Developed by Dimas Miftah</p>
             </div>
             <div class="space-y-4">
-                <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs ring-1 ring-slate-100 outline-none">
+                <select id="sel-kat" onchange="cekKategori()" class="w-full p-4 rounded-2xl bg-slate-50 font-bold text-xs outline-none ring-1 ring-slate-100">
                     <option value="TIU">SKD - TIU (Pass: 80)</option>
                     <option value="TWK">SKD - TWK (Pass: 65)</option>
                     <option value="SKB">SKB - KHUSUS JURUSAN</option>
                 </select>
-                <div id="box-jurusan" class="hidden"><select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs text-indigo-700 ring-1 ring-indigo-100 outline-none"><option value="">-- Pilih Jurusan --</option></select></div>
+                <div id="box-jurusan" class="hidden">
+                    <select id="sel-pend" class="w-full p-4 rounded-2xl bg-indigo-50 font-bold text-xs text-indigo-700 outline-none ring-1 ring-indigo-100">
+                        <option value="">-- Pilih Jurusan --</option>
+                    </select>
+                </div>
             </div>
-            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.5rem] shadow-lg active:scale-95 transition-all uppercase text-[10px] tracking-widest">Mulai Simulasi Sekarang</button>
+            <button onclick="mulaiUjian()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.5rem] shadow-lg active:scale-95 transition-all text-[10px] tracking-widest">MULAI SIMULASI</button>
         </div>
 
-        <div id="quiz-area" class="hidden space-y-4 fade-in">
+        <div id="quiz-area" class="hidden space-y-4">
             <div class="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 min-h-[300px] flex flex-col">
-                <div id="counter-soal-box" class="mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Progress: <span id="counter-soal" class="text-indigo-600">0/0</span></div>
-                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8 text-md"></p>
+                <p id="counter-soal" class="mb-4 text-[10px] font-bold text-slate-400 uppercase">Progress: 0/0</p>
+                <p id="tanya" class="text-slate-800 font-bold leading-relaxed mb-8"></p>
                 <div id="opsi-list" class="space-y-3 mb-6"></div>
-                <div id="bahas-box" class="hidden mt-auto p-6 bg-slate-900 rounded-[2rem] text-white fade-in">
+                <div id="bahas-box" class="hidden mt-auto p-6 bg-slate-900 rounded-[2rem] text-white">
                     <p id="kunci-text" class="font-black text-[10px] uppercase text-emerald-400 mb-2"></p>
-                    <p id="bahas-text" class="text-slate-400 text-[11px] font-medium leading-relaxed mb-6 italic"></p>
-                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-lg">Lanjut Soal</button>
+                    <p id="bahas-text" class="text-slate-400 text-[11px] mb-6 italic"></p>
+                    <button onclick="ambilSoal()" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl text-[10px] uppercase">Lanjut Soal</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="modal-hasil" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-indigo-950/80 backdrop-blur-sm fade-in">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] overflow-hidden shadow-2xl">
-            
-            <div id="area-sertifikat" class="bg-white p-8 text-center relative">
-                <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none text-4xl font-black rotate-12 uppercase">DIMAS MIFTAH CPNS PRO</div>
-                
-                <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10"><span class="text-4xl">🏆</span></div>
-                <h2 class="text-2xl font-black text-indigo-900 mb-1 relative z-10">Hasil Simulasi</h2>
-                <p id="hasil-status" class="text-[10px] font-black uppercase tracking-widest mb-4 text-slate-400 relative z-10">STATUS</p>
-                <p id="hasil-msg" class="text-slate-500 text-[10px] mb-8 px-4 relative z-10 leading-relaxed italic">Hasil simulasi kamu telah direkap.</p>
-                
-                <div class="grid grid-cols-2 gap-4 mb-8 relative z-10">
+    <div id="modal-hasil" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-indigo-950/80 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center overflow-hidden shadow-2xl">
+            <div id="area-sertifikat" class="bg-white p-4">
+                <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🏆</span></div>
+                <h2 class="text-2xl font-black text-indigo-900">Hasil Simulasi</h2>
+                <p id="hasil-status" class="text-[10px] font-black uppercase tracking-widest mb-6 text-slate-400">STATUS</p>
+                <div class="grid grid-cols-2 gap-4 mb-8">
                     <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                        <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Akurasi Jawaban</p>
-                        <p class="text-lg font-black text-emerald-500"><span id="hasil-benar">0</span>/<span id="hasil-total">0</span></p>
-                        <p class="text-[7px] text-slate-400 font-bold">Soal Terjawab Benar</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase">Benar</p>
+                        <p id="hasil-benar" class="text-xl font-black text-emerald-500">0</p>
                     </div>
                     <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                        <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Total Skor</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase">Skor</p>
                         <p id="hasil-skor" class="text-xl font-black text-indigo-600">0</p>
-                        <p class="text-[7px] text-slate-400 font-bold">(Benar x 5 Poin)</p>
                     </div>
                 </div>
-
-                <div class="pt-4 border-t border-dashed border-slate-200">
-                    <p class="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Simulasi by Dimas Miftah</p>
-                    <div class="flex justify-center gap-4 text-[8px] font-bold text-indigo-500">
-                        <span>IG: @dimasmiftah_</span>
-                        <span>TikTok: @dimasmiftah_</span>
-                    </div>
-                </div>
+                <p class="text-[9px] font-bold text-slate-400 uppercase">IG/TikTok: @dimasmiftah_</p>
             </div>
-
-            <div class="p-8 pt-0 space-y-3">
-                <button id="btn-save" onclick="downloadSertifikat()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">Simpan Hasil (PNG)</button>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="shareWA()" class="bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-[9px] uppercase">WA Share</button>
-                    <button onclick="location.reload()" class="bg-slate-100 text-slate-600 font-black py-4 rounded-2xl text-[9px] uppercase tracking-widest">Ulangi</button>
-                </div>
+            <div class="space-y-3 mt-6">
+                <button onclick="downloadSertifikat()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl text-[10px] uppercase">Simpan PNG</button>
+                <button onclick="shareWA()" class="w-full bg-emerald-50 text-emerald-600 font-black py-4 rounded-2xl text-[9px] uppercase">Share WhatsApp</button>
+                <button onclick="location.reload()" class="w-full text-slate-400 text-[9px] font-bold uppercase underline">Ulangi</button>
             </div>
         </div>
     </div>
 
-    <footer class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 z-40">
-        <div class="max-w-md mx-auto flex justify-between items-center px-4">
-            <div>
-                <p class="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Dimas Miftah © 2026</p>
-                <div class="flex gap-3 mt-1 text-indigo-600">
-                    <a href="https://www.instagram.com/dimasmiftah_/" target="_blank" class="hover:scale-110 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg></a>
-                    <a href="https://www.tiktok.com/@dimasmiftah_" target="_blank" class="hover:scale-110 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>
-                </div>
-            </div>
-            <button onclick="finishUjian()" class="bg-red-50 text-red-600 text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest">Selesai Ujian</button>
-        </div>
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/90 border-t p-4 flex justify-between items-center max-w-md mx-auto">
+        <p class="text-slate-400 text-[8px] font-black uppercase">Dimas Miftah © 2026</p>
+        <button onclick="finishUjian()" class="text-red-500 text-[9px] font-black uppercase">Selesai</button>
     </footer>
 
     <script>
-        // MASUKKAN LINK WEB APP GOOGLE SCRIPT ANDA DI SINI
         const API_URL = "https://script.google.com/macros/s/AKfycbyohFZLV5XmuMhuW13uYNY4zizjxjnPdYaGRpReVKXRpHXevE7P_ZfxyfBFZLVE9OxEPw/exec"; 
+        let db = [], filteredSoal = [], skor = 0, benar = 0, salah = 0, waktu = 100 * 60, timerInterval, totalSoalKategori = 0, soalDikerjakan = 0;
 
-        let db = [], skor = 0, benar = 0, salah = 0, waktu = 100 * 60, totalWaktu = 100 * 60, timerInterval, soalDikerjakan = 0, totalSoalKategori = 0, filteredSoal = [];
+        // 1. SOUND & VIBRATE LOGIC
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
 
-        // ANTI INSPECT & DEBUGGER
-        (function() {
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.onkeydown = e => {
-                if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && e.keyCode == 85)) return false;
-            };
-            setInterval(() => { (function(){return false}['constructor']('debugger')['call']('action')) }, 1000);
-        })();
+        function triggerVibrate(pattern) {
+            if ("vibrate" in navigator) navigator.vibrate(pattern);
+        }
 
+        // 2. INIT DATA & JURUSAN
         async function init() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                
-                // MAPPING DATA AGAR TIDAK ERROR MESKIPUN HURUF BESAR/KECIL DI SHEETS
-                db = data.map(item => ({
-                    kat: String(item.kategori || item.Kategori || "").trim(),
-                    pend: String(item.jurusan || item.Jurusan || "").trim(),
-                    soal: item.soal || item.Soal,
-                    opsi: (item.opsi || item.Opsi) ? (item.opsi || item.Opsi).split(';') : [],
-                    kunci: String(item.kunci || item.Kunci || "").trim(),
-                    bahas: item.pembahasan || item.Pembahasan || item.bahas || item.Bahas
-                }));
+                db = data.map(item => {
+                    const getV = (k) => {
+                        const key = Object.keys(item).find(x => x.toLowerCase().trim() === k);
+                        return key ? String(item[key]).trim() : "";
+                    };
+                    return {
+                        kat: getV('kategori'),
+                        pend: getV('jurusan'),
+                        soal: getV('soal'),
+                        opsi: getV('opsi') ? getV('opsi').split(';') : [],
+                        kunci: getV('kunci'),
+                        bahas: getV('pembahasan')
+                    };
+                });
 
-                // ISI DROPDOWN JURUSAN UNTUK SKB
-                const list = [...new Set(db.filter(x => x.kat === "SKB" && x.pend !== "").map(x => x.pend))];
+                // ISI DROPDOWN JURUSAN
+                const listJurusan = [...new Set(db.filter(x => x.kat.toUpperCase() === "SKB" && x.pend !== "").map(x => x.pend))].sort();
                 const sel = document.getElementById('sel-pend');
-                list.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
+                listJurusan.forEach(j => { sel.innerHTML += `<option value="${j}">${j}</option>`; });
                 
                 document.getElementById('loading-screen').classList.add('hidden');
-            } catch (e) {
-                console.error(e);
-                alert("Gagal memuat bank soal!");
-            }
+            } catch (e) { alert("Data gagal dimuat!"); }
         }
 
         function cekKategori() {
-            const kat = document.getElementById('sel-kat').value;
-            document.getElementById('box-jurusan').classList.toggle('hidden', kat !== "SKB");
+            document.getElementById('box-jurusan').classList.toggle('hidden', document.getElementById('sel-kat').value !== "SKB");
         }
 
-        function keBeranda() { if(confirm("Keluar dari simulasi?")) location.reload(); }
-
         function mulaiUjian() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const kat = document.getElementById('sel-kat').value;
             const pend = document.getElementById('sel-pend').value;
-            
             filteredSoal = db.filter(x => x.kat === kat);
             if(kat === "SKB") filteredSoal = filteredSoal.filter(x => x.pend === pend);
-            
             if(filteredSoal.length === 0) return alert("Soal tidak ditemukan!");
             
             totalSoalKategori = filteredSoal.length;
-            document.getElementById('counter-soal').innerText = `0/${totalSoalKategori}`;
             document.getElementById('setup-area').classList.add('hidden');
             document.getElementById('quiz-area').classList.remove('hidden');
             document.getElementById('live-badge').classList.remove('hidden');
-            document.getElementById('kat-aktif').innerText = kat;
             startTimer(); ambilSoal();
         }
 
@@ -219,8 +181,7 @@
             timerInterval = setInterval(() => {
                 let m = Math.floor(waktu / 60), s = waktu % 60;
                 document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                document.getElementById('progress-bar').style.width = (waktu / totalWaktu * 100) + "%";
-                if (waktu <= 60) document.getElementById('timer').classList.add('timer-low');
+                document.getElementById('progress-bar').style.width = (waktu / (100*60) * 100) + "%";
                 if (waktu <= 0) finishUjian();
                 waktu--;
             }, 1000);
@@ -228,37 +189,33 @@
 
         function ambilSoal() {
             if (filteredSoal.length === 0) return finishUjian();
-            
-            const index = Math.floor(Math.random() * filteredSoal.length);
-            const item = filteredSoal[index];
-            filteredSoal.splice(index, 1); // Agar soal tidak muncul lagi
+            const idx = Math.floor(Math.random() * filteredSoal.length);
+            const item = filteredSoal[idx];
+            filteredSoal.splice(idx, 1);
             
             document.getElementById('bahas-box').classList.add('hidden');
             document.getElementById('tanya').innerText = item.soal;
             const box = document.getElementById('opsi-list'); box.innerHTML = "";
             
-            let opsiAcak = [...item.opsi].sort(() => Math.random() - 0.5);
-
-            opsiAcak.forEach(o => {
+            item.opsi.forEach(o => {
                 const b = document.createElement('button');
                 b.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-slate-50 font-bold text-xs text-slate-600 transition active:scale-95";
                 b.innerText = o.trim();
                 b.onclick = () => {
                     soalDikerjakan++;
-                    document.getElementById('counter-soal').innerText = `${soalDikerjakan}/${totalSoalKategori}`;
+                    document.getElementById('counter-soal').innerText = `Progress: ${soalDikerjakan}/${totalSoalKategori}`;
                     document.querySelectorAll('#opsi-list button').forEach(btn => btn.disabled = true);
+                    
                     if(o.trim() === item.kunci.trim()) {
                         b.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
-                        skor += 5; benar++;
-                        document.getElementById('skor').innerText = skor;
-                        document.getElementById('header-benar').innerText = benar;
-                        confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+                        skor += 5; benar++; playBeep(880, 0.1); // Suara Benar
+                        confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
                     } else {
                         b.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
-                        salah++;
-                        document.getElementById('header-salah').innerText = salah;
+                        salah++; triggerVibrate(200); playBeep(220, 0.2); // Getar & Suara Salah
                         document.querySelectorAll('#opsi-list button').forEach(btn => { if(btn.innerText.trim() === item.kunci.trim()) btn.classList.add('text-emerald-600', 'font-black'); });
                     }
+                    document.getElementById('skor').innerText = skor;
                     document.getElementById('kunci-text').innerText = "Kunci: " + item.kunci;
                     document.getElementById('bahas-text').innerText = item.bahas;
                     document.getElementById('bahas-box').classList.remove('hidden');
@@ -272,49 +229,25 @@
             clearInterval(timerInterval);
             document.getElementById('modal-hasil').classList.remove('hidden');
             document.getElementById('hasil-benar').innerText = benar;
-            document.getElementById('hasil-total').innerText = soalDikerjakan;
             document.getElementById('hasil-skor').innerText = skor;
-            
             const kat = document.getElementById('sel-kat').value;
-            let statusText = "SIMULASI SELESAI";
-            let msg = "Terus asah kemampuanmu tiap hari!";
-            let warna = "text-slate-400";
-            
-            if(kat === "TIU") {
-                statusText = skor >= 80 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 80)";
-                warna = skor >= 80 ? "text-emerald-500" : "text-red-500";
-                msg = skor >= 80 ? "Logika kamu mantap! Pertahankan!" : "Ayo perbanyak latihan deret dan silogisme.";
-            } else if(kat === "TWK") {
-                statusText = skor >= 65 ? "LULUS PASSING GRADE" : "TIDAK LULUS PG (MIN. 65)";
-                warna = skor >= 65 ? "text-emerald-500" : "text-red-500";
-                msg = skor >= 65 ? "Wawasan kebangsaanmu luar biasa!" : "Baca lagi tentang sejarah dan UUD 1945 ya.";
-            }
-            
-            const statusEl = document.getElementById('hasil-status');
-            statusEl.innerText = statusText;
-            statusEl.className = `text-[10px] font-black uppercase tracking-widest mb-4 ${warna}`;
-            document.getElementById('hasil-msg').innerText = msg;
-            if(statusText.includes("LULUS")) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            let pg = kat === "TIU" ? 80 : (kat === "TWK" ? 65 : 0);
+            const st = document.getElementById('hasil-status');
+            st.innerText = skor >= pg ? "LULUS PASSING GRADE" : "BELUM LULUS PG";
+            st.className = `text-[10px] font-black uppercase tracking-widest mb-6 ${skor >= pg ? 'text-emerald-500' : 'text-red-500'}`;
+            if(skor >= pg) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
 
         function downloadSertifikat() {
-            const area = document.getElementById('area-sertifikat');
-            const btn = document.getElementById('btn-save');
-            btn.innerText = "Processing...";
-            btn.disabled = true;
-            html2canvas(area, { scale: 3 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Skor_CAT_DimasMiftah_${new Date().getTime()}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                btn.innerText = "Simpan Hasil (PNG)";
-                btn.disabled = false;
+            html2canvas(document.getElementById('area-sertifikat'), { scale: 3 }).then(canvas => {
+                const a = document.createElement('a'); a.download = 'Skor_CPNS.png';
+                a.href = canvas.toDataURL(); a.click();
             });
         }
 
         function shareWA() {
-            const text = `🏆 *HASIL SIMULASI CAT CPNS* 🏆\n--------------------------------------------\n🎯 *Skor:* ${skor}\n✅ *Benar:* ${benar}\n📢 *Status:* ${document.getElementById('hasil-status').innerText}\n\n🚀 *Coba Simulasi di:* \n${window.location.href}\n\n📱 *by Dimas Miftah:* \n📸 IG/TikTok: @dimasmiftah_`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            const txt = `🏆 *HASIL CAT CPNS*\nSkor: ${skor}\nBenar: ${benar}\nStatus: ${document.getElementById('hasil-status').innerText}\n\nby Dimas Miftah`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
         }
 
         init();
